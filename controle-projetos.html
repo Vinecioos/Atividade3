@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Projetos</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--ink:#1f2937;--muted:#6b7280;--primary:#3157d5;--primary-dark:#2444b4;--line:#e5e7eb;--danger:#b42318;--success:#067647;--soft:#eef2ff}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}header{background:linear-gradient(120deg,#1e2f69,#3157d5);color:#fff;padding:28px max(22px,calc((100% - 1180px)/2));box-shadow:0 4px 16px #1e2f691c}header h1{margin:0 0 6px;font-size:clamp(22px,3vw,30px)}header p{margin:0;color:#dbe5ff}.wrap{max-width:1180px;margin:24px auto;padding:0 18px}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:20px}.stat,.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 3px 12px #17255408}.stat{padding:18px}.stat span{font-size:13px;color:var(--muted)}.stat strong{display:block;font-size:28px;margin-top:6px}.layout{display:grid;grid-template-columns:330px 1fr;gap:18px;align-items:start}.panel{padding:20px;margin-bottom:18px}.panel h2{font-size:18px;margin:0 0 16px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.tab{border:1px solid var(--line);background:#fff;color:var(--ink);padding:10px 14px;border-radius:9px;cursor:pointer;font-weight:600}.tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}label{display:block;font-size:13px;font-weight:650;margin:13px 0 6px}input,select{width:100%;padding:10px 11px;border:1px solid #d1d5db;border-radius:8px;font:inherit;background:#fff;color:var(--ink)}input:focus,select:focus{outline:3px solid #3157d525;border-color:var(--primary)}button{font:inherit}.btn{border:0;border-radius:8px;padding:10px 13px;font-weight:650;cursor:pointer;background:var(--primary);color:white}.btn:hover{background:var(--primary-dark)}.btn.secondary{background:#eef2ff;color:#2b49ac}.btn.danger{background:#fff0ee;color:var(--danger)}.btn.small{padding:6px 9px;font-size:12px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.hint{font-size:12px;color:var(--muted);line-height:1.5}.content-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}.content-head h2{margin:0}.searchrow{display:flex;gap:8px;flex-wrap:wrap}.searchrow input{min-width:150px;max-width:220px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:560px}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}th{color:var(--muted);font-weight:700;background:#fafbff}tr:last-child td{border-bottom:0}.muted{color:var(--muted)}.pill{display:inline-block;background:var(--soft);color:#3048a4;border-radius:20px;padding:4px 8px;font-size:11px;font-weight:700}.empty{text-align:center;color:var(--muted);padding:28px 10px}.notice{display:none;margin-bottom:16px;border-radius:9px;padding:11px 13px;font-size:13px}.notice.show{display:block}.notice.ok{background:#ecfdf3;color:var(--success)}.notice.err{background:#fef3f2;color:var(--danger)}.hidden{display:none!important}.section{display:none}.section.active{display:block}.inline-form{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.inline-form .full{grid-column:1/-1}.item-list{display:flex;flex-wrap:wrap;gap:7px}.item-list span{font-size:12px;background:#f3f4f6;border-radius:7px;padding:6px 8px}@media(max-width:850px){.layout{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.stats .stat:last-child{grid-column:1/-1}}@media(max-width:480px){.stats{grid-template-columns:1fr}.stats .stat:last-child{grid-column:auto}.panel{padding:15px}.inline-form{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><h1>Controle de Projetos</h1><p>Organize projetos, funcionários e setores em um só lugar.</p></header>
+<main class="wrap">
+  <div id="notice" class="notice" role="status"></div>
+  <section class="stats">
+    <div class="stat"><span>Total de projetos</span><strong id="statProjects">0</strong></div>
+    <div class="stat"><span>Funcionários cadastrados</span><strong id="statEmployees">0</strong></div>
+    <div class="stat"><span>Setores cadastrados</span><strong id="statSectors">0</strong></div>
+  </section>
+  <nav class="tabs" aria-label="Seções">
+    <button class="tab active" data-tab="projects">Projetos</button>
+    <button class="tab" data-tab="employees">Funcionários</button>
+    <button class="tab" data-tab="sectors">Setores</button>
+    <button class="tab" data-tab="links">Vincular funcionário</button>
+  </nav>
+
+  <section id="projects" class="section active">
+    <div class="layout">
+      <div class="panel">
+        <h2 id="projectFormTitle">Cadastrar projeto</h2>
+        <form id="projectForm">
+          <input type="hidden" id="projectId">
+          <label for="projectDescription">Descrição *</label><input id="projectDescription" required maxlength="160" placeholder="Ex.: Sistema de vendas">
+          <label for="projectStart">Data de início *</label><input type="date" id="projectStart" required>
+          <label for="projectEnd">Data de término *</label><input type="date" id="projectEnd" required>
+          <div class="actions"><button class="btn" type="submit">Salvar projeto</button><button class="btn secondary" type="button" id="cancelProjectEdit">Limpar</button></div>
+        </form>
+        <p class="hint">Os dados ficam salvos neste navegador usando armazenamento local. Nenhum backend é necessário.</p>
+      </div>
+      <div class="panel">
+        <div class="content-head"><h2>Projetos cadastrados</h2></div>
+        <div class="searchrow">
+          <input id="projectSearch" placeholder="Buscar por descrição…" aria-label="Buscar projeto">
+          <input type="date" id="periodStart" aria-label="Início do período">
+          <input type="date" id="periodEnd" aria-label="Fim do período">
+          <button class="btn secondary" id="filterPeriod" type="button">Filtrar período</button>
+          <button class="btn secondary" id="clearFilter" type="button">Limpar</button>
+        </div>
+        <div class="table-wrap" style="margin-top:14px"><table><thead><tr><th>Projeto</th><th>Período</th><th>Funcionários</th><th>Ações</th></tr></thead><tbody id="projectRows"></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="employees" class="section">
+    <div class="layout">
+      <div class="panel">
+        <h2>Cadastrar funcionário</h2>
+        <form id="employeeForm">
+          <label for="employeeName">Nome completo *</label><input id="employeeName" required maxlength="100" placeholder="Nome do funcionário">
+          <label for="employeeSector">Setor</label><select id="employeeSector"><option value="">Sem setor</option></select>
+          <div class="actions"><button class="btn" type="submit">Salvar funcionário</button></div>
+        </form>
+      </div>
+      <div class="panel"><div class="content-head"><h2>Funcionários cadastrados</h2><input id="employeeSearch" placeholder="Buscar funcionário…" aria-label="Buscar funcionário" style="max-width:220px"></div>
+        <div class="table-wrap"><table><thead><tr><th>Nome</th><th>Setor</th><th>Projetos</th><th>Ações</th></tr></thead><tbody id="employeeRows"></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sectors" class="section">
+    <div class="layout">
+      <div class="panel">
+        <h2>Cadastrar setor</h2>
+        <form id="sectorForm"><label for="sectorName">Nome do setor *</label><input id="sectorName" required maxlength="80" placeholder="Ex.: Desenvolvimento"><div class="actions"><button class="btn" type="submit">Salvar setor</button></div></form>
+      </div>
+      <div class="panel"><h2>Setores cadastrados</h2><div class="table-wrap"><table><thead><tr><th>Setor</th><th>Funcionários</th><th>Ações</th></tr></thead><tbody id="sectorRows"></tbody></table></div></div>
+    </div>
+  </section>
+
+  <section id="links" class="section">
+    <div class="layout">
+      <div class="panel">
+        <h2>Vincular funcionário a projeto</h2>
+        <form id="linkForm">
+          <label for="linkProject">Projeto *</label><select id="linkProject" required><option value="">Selecione um projeto</option></select>
+          <label for="linkEmployee">Funcionário *</label><select id="linkEmployee" required><option value="">Selecione um funcionário</option></select>
+          <div class="actions"><button class="btn" type="submit">Criar vínculo</button></div>
+        </form>
+        <p class="hint">Um funcionário pode participar de vários projetos. O mesmo vínculo não será duplicado.</p>
+      </div>
+      <div class="panel"><h2>Projetos por funcionário</h2><label for="employeeProjectSelect">Selecione um funcionário</label><select id="employeeProjectSelect"><option value="">Selecione</option></select><div id="employeeProjectDetails" class="item-list" style="margin-top:14px"></div></div>
+    </div>
+  </section>
+  <footer class="hint" style="text-align:center;padding:8px 0 24px">Sistema local de demonstração · Os dados permanecem neste navegador.</footer>
+</main>
+<script>
+const KEY='controleProjetosLocalV1';
+let db=loadDB();
+function loadDB(){try{return JSON.parse(localStorage.getItem(KEY))||{projects:[],employees:[],sectors:[],next:{project:1,employee:1,sector:1}}}catch(e){return {projects:[],employees:[],sectors:[],next:{project:1,employee:1,sector:1}}}}
+function save(){localStorage.setItem(KEY,JSON.stringify(db));render()}
+function escapeHTML(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function notify(msg,type='ok'){const n=document.getElementById('notice');n.textContent=msg;n.className='notice show '+type;window.clearTimeout(notify.timer);notify.timer=setTimeout(()=>n.className='notice',3600)}
+function dateBR(s){if(!s)return '—';const [y,m,d]=s.split('-');return `${d}/${m}/${y}`}
+function getProject(id){return db.projects.find(x=>x.id===Number(id))}
+function getEmployee(id){return db.employees.find(x=>x.id===Number(id))}
+function getSector(id){return db.sectors.find(x=>x.id===Number(id))}
+function projectEmployees(p){return (p.employeeIds||[]).map(getEmployee).filter(Boolean)}
+function render(){
+ document.getElementById('statProjects').textContent=db.projects.length;
+ document.getElementById('statEmployees').textContent=db.employees.length;
+ document.getElementById('statSectors').textContent=db.sectors.length;
+ renderProjects();renderEmployees();renderSectors();renderSelects();renderEmployeeProjects();
+}
+function renderProjects(){
+ const q=document.getElementById('projectSearch').value.toLocaleLowerCase('pt-BR');
+ const start=document.getElementById('periodStart').value,end=document.getElementById('periodEnd').value;
+ let arr=db.projects.filter(p=>p.description.toLocaleLowerCase('pt-BR').includes(q));
+ if(start)arr=arr.filter(p=>p.start>=start);if(end)arr=arr.filter(p=>p.start<=end);
+ const body=document.getElementById('projectRows');
+ if(!arr.length){body.innerHTML='<tr><td colspan="4" class="empty">Nenhum projeto encontrado.</td></tr>';return}
+ body.innerHTML=arr.sort((a,b)=>a.start.localeCompare(b.start)).map(p=>`<tr><td><strong>${escapeHTML(p.description)}</strong><br><span class="muted">ID: ${p.id}</span></td><td>${dateBR(p.start)}<br><span class="muted">até ${dateBR(p.end)}</span></td><td>${projectEmployees(p).length?projectEmployees(p).map(e=>`<span class="pill">${escapeHTML(e.name)}</span>`).join(' '):'<span class="muted">Nenhum</span>'}</td><td><div class="actions" style="margin:0"><button class="btn secondary small" onclick="editProject(${p.id})">Editar</button><button class="btn danger small" onclick="deleteProject(${p.id})">Excluir</button></div></td></tr>`).join('');
+}
+function renderEmployees(){
+ const q=document.getElementById('employeeSearch').value.toLocaleLowerCase('pt-BR');
+ const arr=db.employees.filter(e=>e.name.toLocaleLowerCase('pt-BR').includes(q));const body=document.getElementById('employeeRows');
+ if(!arr.length){body.innerHTML='<tr><td colspan="4" class="empty">Nenhum funcionário cadastrado.</td></tr>';return}
+ body.innerHTML=arr.map(e=>{const sector=getSector(e.sectorId);const projects=db.projects.filter(p=>(p.employeeIds||[]).includes(e.id));return `<tr><td><strong>${escapeHTML(e.name)}</strong><br><span class="muted">ID: ${e.id}</span></td><td>${sector?escapeHTML(sector.name):'<span class="muted">Sem setor</span>'}</td><td>${projects.length}</td><td><button class="btn danger small" onclick="deleteEmployee(${e.id})">Excluir</button></td></tr>`}).join('');
+}
+function renderSectors(){
+ const body=document.getElementById('sectorRows');
+ if(!db.sectors.length){body.innerHTML='<tr><td colspan="3" class="empty">Nenhum setor cadastrado.</td></tr>';return}
+ body.innerHTML=db.sectors.map(s=>{const emps=db.employees.filter(e=>e.sectorId===s.id);return `<tr><td><strong>${escapeHTML(s.name)}</strong><br><span class="muted">ID: ${s.id}</span></td><td>${emps.length?emps.map(e=>escapeHTML(e.name)).join(', '):'<span class="muted">Nenhum</span>'}</td><td><button class="btn danger small" onclick="deleteSector(${s.id})">Excluir</button></td></tr>`}).join('');
+}
+function fillSelect(id,items,label,selected){const el=document.getElementById(id),old=selected??el.value;el.innerHTML=`<option value="">${label}</option>`+items.map(x=>`<option value="${x.id}">${escapeHTML(x.name||x.description)}</option>`).join('');if(items.some(x=>String(x.id)===String(old)))el.value=old}
+function renderSelects(){fillSelect('employeeSector',db.sectors,'Sem setor');fillSelect('linkProject',db.projects,'Selecione um projeto');fillSelect('linkEmployee',db.employees,'Selecione um funcionário');fillSelect('employeeProjectSelect',db.employees,'Selecione')}
+function renderEmployeeProjects(){const id=Number(document.getElementById('employeeProjectSelect').value);const box=document.getElementById('employeeProjectDetails');if(!id){box.innerHTML='<span class="muted">Os projetos do funcionário aparecerão aqui.</span>';return}const projects=db.projects.filter(p=>(p.employeeIds||[]).includes(id));box.innerHTML=projects.length?projects.map(p=>`<span>${escapeHTML(p.description)} · ${dateBR(p.start)}</span>`).join(''):'<span class="muted">Este funcionário não está vinculado a projetos.</span>'}
+document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b===btn));document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===btn.dataset.tab));document.getElementById('notice').className='notice'}));
+document.getElementById('projectForm').addEventListener('submit',e=>{e.preventDefault();const id=Number(document.getElementById('projectId').value);const description=document.getElementById('projectDescription').value.trim();const start=document.getElementById('projectStart').value;const end=document.getElementById('projectEnd').value;if(!description)return notify('Informe a descrição do projeto.','err');if(end<start)return notify('A data de término não pode ser anterior à data de início.','err');if(id){const p=getProject(id);Object.assign(p,{description,start,end});notify('Projeto atualizado com sucesso.')}else{db.projects.push({id:db.next.project++,description,start,end,employeeIds:[]});notify('Projeto cadastrado com sucesso.')}document.getElementById('projectForm').reset();document.getElementById('projectId').value='';document.getElementById('projectFormTitle').textContent='Cadastrar projeto';save()});
+document.getElementById('cancelProjectEdit').addEventListener('click',()=>{document.getElementById('projectForm').reset();document.getElementById('projectId').value='';document.getElementById('projectFormTitle').textContent='Cadastrar projeto'});
+function editProject(id){const p=getProject(id);if(!p)return;document.getElementById('projectId').value=p.id;document.getElementById('projectDescription').value=p.description;document.getElementById('projectStart').value=p.start;document.getElementById('projectEnd').value=p.end;document.getElementById('projectFormTitle').textContent='Editar projeto';document.getElementById('projectDescription').focus();window.scrollTo({top:0,behavior:'smooth'})}
+function deleteProject(id){const p=getProject(id);if(!p||!confirm(`Excluir o projeto "${p.description}"?`))return;db.projects=db.projects.filter(x=>x.id!==id);save();notify('Projeto excluído.')}
+document.getElementById('projectSearch').addEventListener('input',renderProjects);
+document.getElementById('filterPeriod').addEventListener('click',()=>{const a=document.getElementById('periodStart').value,b=document.getElementById('periodEnd').value;if(a&&b&&b<a)return notify('O fim do período deve ser posterior ao início.','err');renderProjects()});
+document.getElementById('clearFilter').addEventListener('click',()=>{document.getElementById('projectSearch').value='';document.getElementById('periodStart').value='';document.getElementById('periodEnd').value='';renderProjects()});
+document.getElementById('employeeForm').addEventListener('submit',e=>{e.preventDefault();const name=document.getElementById('employeeName').value.trim();if(!name)return;db.employees.push({id:db.next.employee++,name,sectorId:Number(document.getElementById('employeeSector').value)||null});document.getElementById('employeeForm').reset();save();notify('Funcionário cadastrado com sucesso.')});
+document.getElementById('employeeSearch').addEventListener('input',renderEmployees);
+function deleteEmployee(id){const e=getEmployee(id);if(!e||!confirm(`Excluir o funcionário "${e.name}"? Ele será removido dos projetos vinculados.`))return;db.employees=db.employees.filter(x=>x.id!==id);db.projects.forEach(p=>p.employeeIds=(p.employeeIds||[]).filter(x=>x!==id));save();notify('Funcionário excluído.')}
+document.getElementById('sectorForm').addEventListener('submit',e=>{e.preventDefault();const name=document.getElementById('sectorName').value.trim();if(!name)return;if(db.sectors.some(s=>s.name.toLocaleLowerCase('pt-BR')===name.toLocaleLowerCase('pt-BR')))return notify('Já existe um setor com esse nome.','err');db.sectors.push({id:db.next.sector++,name});document.getElementById('sectorForm').reset();save();notify('Setor cadastrado com sucesso.')});
+function deleteSector(id){const s=getSector(id);if(!s||!confirm(`Excluir o setor "${s.name}"? Os funcionários permanecerão cadastrados sem setor.`))return;db.sectors=db.sectors.filter(x=>x.id!==id);db.employees.forEach(e=>{if(e.sectorId===id)e.sectorId=null});save();notify('Setor excluído.')}
+document.getElementById('linkForm').addEventListener('submit',e=>{e.preventDefault();const pid=Number(document.getElementById('linkProject').value),eid=Number(document.getElementById('linkEmployee').value);const p=getProject(pid),emp=getEmployee(eid);if(!p||!emp)return notify('Selecione um projeto e um funcionário.','err');p.employeeIds=p.employeeIds||[];if(p.employeeIds.includes(eid))return notify('Esse funcionário já está vinculado ao projeto.','err');p.employeeIds.push(eid);save();notify('Funcionário vinculado ao projeto.');});
+document.getElementById('employeeProjectSelect').addEventListener('change',renderEmployeeProjects);
+render();
+</script>
+</body>
+</html>
